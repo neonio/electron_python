@@ -6,5 +6,18 @@
 </head>
 <body>
     <h1>Hello World</h1>
+    <p>you can press "Command + R" to reload electron</p>
+    <input id="name"/>
+    <p id="result">支持基础的读文件操作，可以直接使用 input 实现</p>
+    <button>Tap ME!</button>
+    <script>
+        require('./rpc.js')
+
+        // document.querySelector('button').addEventListener('click', (event)=>{
+        //     event.preventDefault();
+        //     document.getElementById('changed').innerHTML = "changed!";
+        //     debugger
+        // });
+    </script>
 </body>
 </html>

@@ -4,11 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "electron": "electron ."
+    "electron": "electron .",
+    "buildPy": "/anaconda3/envs/AIR/bin/pyinstaller ./backend/api.py --clean --distpath ./pydist",
+    "packApp": "./node_modules/.bin/electron-packager . --overwrite --ignore=py$"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "electron": "^2.0.8"
+    "electron": "^2.0.8",
+    "zerorpc": "^0.9.8"
+  },
+  "devDependencies": {
+    "electron-packager": "^12.1.1"
   }
 }

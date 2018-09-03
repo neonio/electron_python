@@ -1,7 +1,7 @@
 
 const electron = require('electron');
 const path = require('path');
-const {app, BrowserWindow, Menu, Notification} = electron;
+const {app, BrowserWindow, Menu, Notification, Tray} = electron;
 let mainWindow;
 let modalWindow;
 let pyProcess = null;
@@ -16,6 +16,18 @@ const createNewWindow = () => {
     modalWindow.on('closed', () => {
         modalWindow = null;
     });
+};
+
+const createNewTray = () => {
+    const iconPath = path.join(__dirname, './resources/happy.png');
+    const tray = new Tray(iconPath);
+    const menuConf = Menu.buildFromTemplate([
+        {
+            label: 'Quit',
+        }
+    ]);
+    tray.popUpContextMenu(menuConf);
+    
 };
 
 const createPySubProcess = () => {
@@ -95,11 +107,18 @@ const menuTemplates = () => {
 
 app.on('ready', () => {
     createPySubProcess();
-    mainWindow = new BrowserWindow({width: 800, height: 600});
+    mainWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        frame: false,
+        resizable: false,
+        show: false,
+    });
     mainWindow.loadFile('index.html');
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
+    createNewTray();
     const mainMenu = Menu.buildFromTemplate(menuTemplates());
     Menu.setApplicationMenu(mainMenu)
 });

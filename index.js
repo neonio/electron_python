@@ -1,11 +1,22 @@
 
 const electron = require('electron');
 const path = require('path');
-const {app, BrowserWindow} = electron;
+const {app, BrowserWindow, Menu, Notification} = electron;
 let mainWindow;
-
+let modalWindow;
 let pyProcess = null;
 let pyProcessPort = null;
+
+const createNewWindow = () => {
+    modalWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        title: "add New"
+    });
+    modalWindow.on('closed', () => {
+        modalWindow = null;
+    });
+};
 
 const createPySubProcess = () => {
     // let script = path.join(__dirname, 'backend', 'api.py');
@@ -27,13 +38,70 @@ const exitPySubProcess = () => {
     pyProcess = null;
 };
 
+const menuTemplates = () => {
+    const baseTempate = [
+        {
+            label: 'File',
+            submenu:[
+                {
+                    label: 'New Item',
+                    accelerator: (process.platform === 'darwin' ? 'Command+' : 'Ctrl+') + 'N',
+                    click() {
+                        createNewWindow()
+                    }
+                },
+                {
+                    label: 'NOTIFICATION',
+                    click() {
+                        let myNotification = new Notification( {
+                            title: "haha",
+                            subtitle: "???",
+                            body: '通知正文内容'
+                        });
+                        myNotification.onclick = () => {
+                            console.log('通知被点击');
+                        };
+                        myNotification.show()
+                    }
+                },
+                {
+                    label: 'Quit',
+                    click() {
+                        app.quit()
+                    }
+                }
+            ]
+        }
+    ];
+    if (process.platform === 'darwin') {
+        baseTempate.unshift({});
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        baseTempate.push({
+            label: 'Debug',
+            submenu:[
+                {
+                    label: "develop tool",
+                    click(item, focusedWindow) {
+                        focusedWindow.toggleDevTools()
+                    }
+                }
+            ]
+
+        });
+    }
+    return baseTempate;
+};
+
 app.on('ready', () => {
     createPySubProcess();
     mainWindow = new BrowserWindow({width: 800, height: 600});
     mainWindow.loadFile('index.html');
-    mainWindow.on('closed',() => {
+    mainWindow.on('closed', () => {
         mainWindow = null;
-    })
+    });
+    const mainMenu = Menu.buildFromTemplate(menuTemplates());
+    Menu.setApplicationMenu(mainMenu)
 });
 
 app.on('will-quit', () => {
